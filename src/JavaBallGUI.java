@@ -19,10 +19,16 @@ public class JavaBallGUI extends JFrame implements ActionListener{
     private JButton bRemove;
     private JButton bRank;
 
+    private JOptionPane errMsg;
+
     private ArrayList<JLabel> matchesLabels;
     private ArrayList<JLabel> rankingLables;
 
     public JavaBallGUI(JavaBallApp app){
+        app.loadTeams();
+        if(!app.teamsLoaded){
+            errMsg.showMessageDialog(null, "TeamsIn.txt not found");
+        }
         setTitle("JavaBall Program");
         setSize(1080, 720);
         setLocation(50, 50);
