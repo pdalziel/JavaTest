@@ -1,3 +1,5 @@
+import entities.Match;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -12,6 +14,7 @@ public class JavaBallGUI extends JFrame implements ActionListener{
     private JPanel sidePanel;
     private JPanel rankingPanel;
 
+    private int displayRows, rankingRows, sideRows;
     //buttons
     private JButton bExit;
     private JButton bLoad;
@@ -20,31 +23,79 @@ public class JavaBallGUI extends JFrame implements ActionListener{
     private JButton bRank;
 
     private JOptionPane errMsg;
+    private String errMsgTxt = "Tournament Cancelled: Not Enough Teams!";
 
     private ArrayList<JLabel> matchesLabels;
     private ArrayList<JLabel> rankingLables;
 
+    private JavaBallApp app;
+
     public JavaBallGUI(JavaBallApp app){
-        app.loadTeams();
-        if(!app.teamsLoaded){
-            errMsg.showMessageDialog(null, "TeamsIn.txt not found");
-        }
+        this.app = app;
         setTitle("JavaBall Program");
         setSize(1080, 720);
         setLocation(50, 50);
+        sideRows = 6;
+        displayRows = 28;
+        rankingRows = 10;
 
+        app.loadTeams();
+        loadMatches();
+        // Check teams loaded correctly
+        if(!app.teamsLoaded){
+            errMsg.showMessageDialog(null, "TeamsIn1.txt not found");
+            System.exit(1);
+        }
+        // Check there are enough teams
+        if(app.getNumberOfTeams() < 3){
+            errMsg.showMessageDialog(null, errMsgTxt);
+            System.exit(2);
+        }
         //add panels
-
         addSidePanel();
         addDisplayPanel();
         addRankingPanel();
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setVisible(true);
-
     }
 
+
+
+    private void updateDisplay(){
+        for (JLabel jLabel: matchesLabels){
+            displayPanel.add(jLabel);
+        }
+    }
+
+
+    private ArrayList<JLabel> loadMatches() {
+        // could use sting padding to ensure equal lengths?
+        ArrayList<Match> matches =  app.getMatches();
+        matchesLabels = new ArrayList<JLabel>();
+        for(int i=0; i < displayRows; i++){
+            matchesLabels.add(new JLabel("",SwingConstants.CENTER));
+        }
+        for(int i = 0; i < matches.size(); i++){
+            if(matches.get(i).isResultExists())
+                matchesLabels.get(i).setText(matches.get(i).getTeam1Name() +  "    " + matches.get(i).getT1Score() + "    "
+                        + matches.get(i).getTeam2Name()+  "    " + matches.get(i).getT2Score());
+            else
+                matchesLabels.get(i).setText(matches.get(i).getTeam1Name() + "     v     " + matches.get(i).getTeam2Name()
+                        + "    *** no results yet ***    ");
+        }
+        return matchesLabels;
+    }
+
+    private void  clearDisplay () {
+        for (JLabel jLabel : matchesLabels){
+            jLabel.setText("");
+            displayPanel.add(jLabel);
+        }
+    }
+
+
     private void addRankingPanel() {
-        GridLayout gridLayout = new GridLayout(10,10);
+        GridLayout gridLayout = new GridLayout(rankingRows,10);
         rankingPanel = new JPanel(gridLayout);
         add(rankingPanel,"South");
         TitledBorder titledBorder = BorderFactory.createTitledBorder("Team Rankings");
@@ -56,19 +107,20 @@ public class JavaBallGUI extends JFrame implements ActionListener{
     }
 
     private void addDisplayPanel() {
-        GridLayout gridLayout = new GridLayout(28,1);
+        GridLayout gridLayout = new GridLayout(displayRows,1);
         displayPanel = new JPanel(gridLayout);
         add(displayPanel,"Center");
         TitledBorder titledBorder = BorderFactory.createTitledBorder("Match Results");
         titledBorder.setTitleJustification(TitledBorder.CENTER);
         displayPanel.setBorder(titledBorder);
-        // todo add match labels
+        matchesLabels = loadMatches();
+        updateDisplay();
 
 
     }
 
     private void addSidePanel() {
-        GridLayout gridLayout = new GridLayout(6, 1);
+        GridLayout gridLayout = new GridLayout(sideRows, 1);
         //add panel
         sidePanel = new JPanel(gridLayout);
         add(sidePanel, "West");
@@ -99,11 +151,23 @@ public class JavaBallGUI extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()== bExit){
-            //todo save function
+            //todo save/write out function
             System.exit(0);
         }
         else if(e.getSource()==bRemove){
-            // todo remove function
+            // todo fix remove function fails to find teamname on first try, fix screen updates
+            String teamName = JOptionPane.showInputDialog(null, "Select Team to Remove");
+            if(!app.checkTeam(teamName)){
+                 teamName = JOptionPane.showInputDialog(null, "Team not Found - Select Team to Remove");
+            }
+            if (app.removeTeam(teamName)){
+                JOptionPane.showMessageDialog(null, errMsgTxt);
+                System.exit(2);
+            }
+            clearDisplay();
+            matchesLabels = loadMatches();
+            updateDisplay();
+
         }
         else if(e.getSource()==bLoad){
             // todo load function
