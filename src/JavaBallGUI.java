@@ -5,6 +5,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class JavaBallGUI extends JFrame implements ActionListener{
@@ -62,26 +63,39 @@ public class JavaBallGUI extends JFrame implements ActionListener{
 
 
     private void updateDisplay(){
-        for (JLabel jLabel: matchesLabels){
+
+        for (JLabel jLabel: loadMatches()){
+            //System.out.println(jLabel.getText());
             displayPanel.add(jLabel);
         }
     }
 
 
     private ArrayList<JLabel> loadMatches() {
-        // could use sting padding to ensure equal lengths?
-        ArrayList<Match> matches =  app.getMatches();
+        //System.out.println();
+        // todo could use sting padding to ensure equal lengths?
+
+        ArrayList<Match> matches;
+        if(app.fixturesLoaded){
+            matches =  app.getMatches();
+        }
+        else{
+            matches =  app.getFixtures();
+        }
+
         matchesLabels = new ArrayList<JLabel>();
         for(int i=0; i < displayRows; i++){
-            matchesLabels.add(new JLabel("",SwingConstants.CENTER));
+            matchesLabels.add(new JLabel(" ",SwingConstants.CENTER));
         }
         for(int i = 0; i < matches.size(); i++){
-            if(matches.get(i).isResultExists())
+            if(matches.get(i).isResultExists()){
                 matchesLabels.get(i).setText(matches.get(i).getTeam1Name() +  "    " + matches.get(i).getT1Score() + "    "
                         + matches.get(i).getTeam2Name()+  "    " + matches.get(i).getT2Score());
-            else
+            }
+            else{
                 matchesLabels.get(i).setText(matches.get(i).getTeam1Name() + "     v     " + matches.get(i).getTeam2Name()
                         + "    *** no results yet ***    ");
+            }
         }
         return matchesLabels;
     }
@@ -89,7 +103,7 @@ public class JavaBallGUI extends JFrame implements ActionListener{
     private void  clearDisplay () {
         for (JLabel jLabel : matchesLabels){
             jLabel.setText("");
-            displayPanel.add(jLabel);
+            displayPanel.remove(jLabel);
         }
     }
 
@@ -171,6 +185,14 @@ public class JavaBallGUI extends JFrame implements ActionListener{
         }
         else if(e.getSource()==bLoad){
             // todo load function
+            try {
+                app.loadResults();
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(null, e1.getMessage());
+            }
+            clearDisplay();
+            matchesLabels = loadMatches();
+            updateDisplay();
         }
         else if(e.getSource()==bEnter){
             // todo enter function

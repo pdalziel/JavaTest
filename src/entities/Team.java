@@ -29,6 +29,22 @@ public class Team implements Comparable<Team>{
 
     }
 
+    @Override
+    public String toString() {
+        return "Team{" +
+                "name='" + name + '\'' +
+                ", medal='" + medal + '\'' +
+                ", points=" + points +
+                ", goalDifference=" + goalDifference +
+                ", rank=" + rank +
+                ", won=" + won +
+                ", lost=" + lost +
+                ", draws=" + draws +
+                ", goalsFor=" + goalsFor +
+                ", goalsAgainst=" + goalsAgainst +
+                '}';
+    }
+
     public String getName() {
         return name;
     }

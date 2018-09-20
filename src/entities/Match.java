@@ -21,6 +21,21 @@ public class Match {
         return team2.name;
     }
 
+    public Team getTeam1() {
+        return team1;
+    }
+
+    public void setTeam1(Team team1) {
+        this.team1 = team1;
+    }
+
+    public Team getTeam2() {
+        return team2;
+    }
+
+    public void setTeam2(Team team2) {
+        this.team2 = team2;
+    }
 
     public int getT1Score() {
         return t1Score;
@@ -49,6 +64,18 @@ public class Match {
     public boolean checkTeams(String t1Name, String t2Name){
         return ((t1Name.equals(team1.getName()) && t2Name.equals(team2.getName())) || (t1Name.equals(team2.getName()) && (t2Name.equals(team1.getName()))));
     }
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "team1=" + team1.toString() +
+                ", team2=" + team2.toString() +
+                ", t1Score=" + t1Score +
+                ", t2Score=" + t2Score +
+                ", resultExists=" + resultExists +
+                '}';
+    }
+
     public void calculateRanks(){
         team1.setGoalsFor(t1Score);
         team2.setGoalsFor(t2Score);

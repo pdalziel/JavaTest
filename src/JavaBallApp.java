@@ -19,11 +19,15 @@ public class JavaBallApp {
     private ArrayList<Team> teams;
     private ArrayList<Match> matches;
     boolean teamsLoaded = false;
+    boolean fixturesLoaded = false;
 
     public JavaBallApp(String teamsInFile, String resultsInFile) {
         this.teamsInFile = teamsInFile;
         this.resultsInFile = resultsInFile;
+    }
 
+    public ArrayList<Match> getMatches() {
+        return matches;
     }
 
     public ArrayList<Team> loadTeams(){
@@ -42,34 +46,29 @@ public class JavaBallApp {
         return teams.size();
     }
 
-    private ArrayList<Match> getMatches(ArrayList<Team> teams){
+    private ArrayList<Match> getFixtures(ArrayList<Team> teams){
         matches = new ArrayList<Match>();
         for (int i = 0; i < teams.size() ; i++) {
             for (int j = i+1; j < teams.size(); j++) {
                 matches.add(new Match(teams.get(i), teams.get(j)));
             }
         }
+        fixturesLoaded = true;
         return matches;
     }
-    public ArrayList<Match>getMatches(){
-        return getMatches(teams);
+    public ArrayList<Match>getFixtures(){
+        return getFixtures(teams);
     }
 
 
     public boolean removeTeam(String teamName) {
         removeFromTeamMatches(teamName);
         removeFromTeams(teamName);
-        for (Team team: teams){
-            System.out.println(team.getName());
-        }
-        for (Match match: matches){
-            System.out.println(match.getTeam1Name() + "   " + match.getTeam2Name() );
-        }
         return teams.size()<3;
     }
 
     private void removeFromTeams(String teamName) {
-        int counter =0;
+        int counter = 0;
         while(counter < teams.size()){
             if(teams.get(counter).getName().equals(teamName))
                 teams.remove(counter);
@@ -79,7 +78,7 @@ public class JavaBallApp {
     }
 
     private void removeFromTeamMatches(String teamName) {
-        int counter =0;
+        int counter = 0;
         while(counter < matches.size()){
             if(matches.get(counter).getTeam1Name().equals(teamName) || matches.get(counter).getTeam2Name().equals(teamName))
                 matches.remove(counter);
@@ -90,5 +89,16 @@ public class JavaBallApp {
 
     public boolean checkTeam(String teamName) {
         return teams.contains(teamName);
+    }
+
+    public void loadResults() throws IOException {
+        ResultsFileReader reader = new ResultsFileReader();
+        reader.readResultsInFile(resultsInFile, matches);
+        this.teamsLoaded = true;
+
+    }
+
+    public boolean getTeamsLoaded() {
+        return this.teamsLoaded;
     }
 }
