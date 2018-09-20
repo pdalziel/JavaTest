@@ -73,7 +73,7 @@ public class JavaBallGUI extends JFrame implements ActionListener{
 
     private ArrayList<JLabel> loadMatches() {
         //System.out.println();
-        // todo could use sting padding to ensure equal lengths?
+        // todo could use string padding to ensure equal lengths?
 
         ArrayList<Match> matches;
         if(app.fixturesLoaded){
@@ -82,7 +82,6 @@ public class JavaBallGUI extends JFrame implements ActionListener{
         else{
             matches =  app.getFixtures();
         }
-
         matchesLabels = new ArrayList<JLabel>();
         for(int i=0; i < displayRows; i++){
             matchesLabels.add(new JLabel(" ",SwingConstants.CENTER));
@@ -94,8 +93,7 @@ public class JavaBallGUI extends JFrame implements ActionListener{
             }
             else{
                 matchesLabels.get(i).setText(matches.get(i).getTeam1Name() + "     v     " + matches.get(i).getTeam2Name()
-                        + "    *** no results yet ***    ");
-            }
+                        + "    *** no results yet ***    ");            }
         }
         return matchesLabels;
     }
@@ -153,11 +151,12 @@ public class JavaBallGUI extends JFrame implements ActionListener{
         bRank.setEnabled(false);
         bRank.addActionListener(this);
 
-        sidePanel.add(bExit);
+
         sidePanel.add(bLoad);
         sidePanel.add(bRemove);
         sidePanel.add(bEnter);
         sidePanel.add(bRank);
+        sidePanel.add(bExit);
     }
 
 
@@ -169,7 +168,6 @@ public class JavaBallGUI extends JFrame implements ActionListener{
             System.exit(0);
         }
         else if(e.getSource()==bRemove){
-            // todo fix remove function fails to find teamname on first try, fix screen updates
             String teamName = JOptionPane.showInputDialog(null, "Select Team to Remove");
             if(!app.checkTeam(teamName)){
                  teamName = JOptionPane.showInputDialog(null, "Team not Found - Select Team to Remove");
@@ -178,24 +176,39 @@ public class JavaBallGUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(null, errMsgTxt);
                 System.exit(2);
             }
+            // update the display
             clearDisplay();
             matchesLabels = loadMatches();
             updateDisplay();
 
         }
         else if(e.getSource()==bLoad){
-            // todo load function
             try {
                 app.loadResults();
             } catch (IOException e1) {
                 JOptionPane.showMessageDialog(null, e1.getMessage());
             }
+            // update the display
             clearDisplay();
             matchesLabels = loadMatches();
             updateDisplay();
+            // Enable manual score entry
+            bEnter.setEnabled(true);
+
         }
         else if(e.getSource()==bEnter){
             // todo enter function
+            // display match and request score
+            // display inputdialog
+            // parse and check score inputs
+            // if more scores to enter, repeat
+
+            // update the display
+            clearDisplay();
+            matchesLabels = loadMatches();
+            updateDisplay();
+            // Enable generation of tournament rankings
+            bRank.setEnabled(true);
         }
         else if(e.getSource()==bRank){
             // todo rank function

@@ -88,7 +88,12 @@ public class JavaBallApp {
     }
 
     public boolean checkTeam(String teamName) {
-        return teams.contains(teamName);
+        for (Team t : teams){
+            if(t.getName().equals(teamName));
+            return true;
+        }
+        return false;
+
     }
 
     public void loadResults() throws IOException {

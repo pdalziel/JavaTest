@@ -89,7 +89,6 @@ public class Match {
         else if(t1Score > t2Score){
             team1.setWon();
             team2.setLost();
-
         }
         else {
             team1.setLost();
