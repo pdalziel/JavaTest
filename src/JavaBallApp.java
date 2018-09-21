@@ -1,17 +1,19 @@
 import entities.Match;
 import entities.Team;
+import utils.TeamByPointsComparator;
 import utils.ResultsFileReader;
 import utils.ResultsFileWriter;
 import utils.TeamFileReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class JavaBallApp {
 
     private TeamFileReader teamReader;
     private ResultsFileReader resultsReader;
-    private ResultsFileWriter resultsWriter;
+    private ResultsFileWriter writer;
 
     private String teamsInFile;
     private String resultsInFile;
@@ -28,6 +30,10 @@ public class JavaBallApp {
 
     public ArrayList<Match> getMatches() {
         return matches;
+    }
+
+    public ArrayList<Team> getTeams() {
+        return teams;
     }
 
     public ArrayList<Team> loadTeams(){
@@ -105,5 +111,47 @@ public class JavaBallApp {
 
     public boolean getTeamsLoaded() {
         return this.teamsLoaded;
+    }
+
+    public void saveToFile(boolean ranked) {
+        writer = new ResultsFileWriter();
+        if (ranked){
+            writer.writeRankings(teams);
+        }
+        else {
+            writer.writeMatchResults(matches);
+        }
+
+    }
+
+    public void rankTeams() {
+        // TODO handle equally ranked teams
+        for (Match match : matches){
+            match.calculateRank();
+        }
+        for (Team team : teams){
+            team.setGoalDifference();
+            team.setPoints();
+            //System.out.println(team.toDebugString());
+        }
+        Collections.sort(teams, new TeamByPointsComparator());
+
+        // TODO if 2+ teams have same points & goal diff award same rank
+        for (int i = 0; i < teams.size(); i++){
+            teams.get(i).setRank(i+1);
+            System.out.println(teams.get(i).toDebugString());
+        }
+       for (Team team : teams){
+           if(team.getRank() == 1){
+               team.setMedal("Gold");
+           }
+           else if(team.getRank() == 2){
+               team.setMedal("Silver");
+           }
+           else if(team.getRank() == 3){
+               team.setMedal("Bronze");
+           }
+      }
+
     }
 }

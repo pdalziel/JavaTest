@@ -1,5 +1,7 @@
 package entities;
 
+import utils.Padder;
+
 public class Match {
     private Team team1;
     private Team team2;
@@ -53,7 +55,7 @@ public class Match {
         this.t2Score = t2Score;
     }
 
-    public boolean isResultExists() {
+    public boolean hasResults() {
         return resultExists;
     }
 
@@ -67,21 +69,17 @@ public class Match {
 
     @Override
     public String toString() {
-        return "Match{" +
-                "team1=" + team1.toString() +
-                ", team2=" + team2.toString() +
-                ", t1Score=" + t1Score +
-                ", t2Score=" + t2Score +
-                ", resultExists=" + resultExists +
-                '}';
+        Padder padder = new Padder();
+        String pName = padder.padString(team1.name);
+        String pName2 = padder.padString(team2.name);
+        return ( pName +   "\t\t" + t1Score  + "\t\t" + pName2  + "\t\t" + t2Score);
     }
 
-    public void calculateRanks(){
+    public void calculateRank(){
         team1.setGoalsFor(t1Score);
         team2.setGoalsFor(t2Score);
         team1.setGoalsAgainst(t2Score);
         team2.setGoalsAgainst(t1Score);
-
         if(t1Score == t2Score){
             team1.setDraws();
             team2.setDraws();

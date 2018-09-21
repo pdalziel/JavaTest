@@ -1,5 +1,7 @@
 package entities;
 
+import utils.Padder;
+
 import java.util.Comparator;
 
 public class Team implements Comparable<Team>{
@@ -29,8 +31,8 @@ public class Team implements Comparable<Team>{
 
     }
 
-    @Override
-    public String toString() {
+
+    public String toDebugString() {
         return "Team{" +
                 "name='" + name + '\'' +
                 ", medal='" + medal + '\'' +
@@ -45,10 +47,29 @@ public class Team implements Comparable<Team>{
                 '}';
     }
 
+    @Override
+    public String toString() {
+        Padder padder = new Padder();
+        String pName = padder.padString(name);
+        return ( pName  + "\t\t" +
+                rank  + "\t\t" +
+                won + "\t\t" +
+                lost + "\t\t" +
+                goalsFor + "\t\t" +
+                goalsAgainst  + "\t\t\t" +
+                points + "\t\t\t" +
+                goalDifference + "\t\t\t\t\t" +
+                medal);
+    }
+
     public String getName() {
         return name;
     }
-
+    public String getPaddedName(){
+        Padder padder = new Padder();
+        String pName = padder.padString(this.name);
+        return pName;
+    }
     public void setName(String name) {
         this.name = name;
     }
@@ -65,16 +86,18 @@ public class Team implements Comparable<Team>{
         return points;
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void setPoints() {
+        this.points = this.won*3 + this.draws;
+        System.out.println( "points = " + this.won*3 + this.draws);
     }
 
     public int getGoalDifference() {
         return goalDifference;
     }
 
-    public void setGoalDifference(int goalDifference) {
-        this.goalDifference = goalDifference;
+    public void setGoalDifference() {
+        this.goalDifference = this.goalsFor - this.goalsAgainst;
+        System.out.println( "goal diff = " + goalDifference + "  " + (this.goalsFor - this.goalsAgainst));
     }
 
     public int getRank() {
@@ -130,15 +153,5 @@ public class Team implements Comparable<Team>{
         return name.compareToIgnoreCase(o.name);
     }
 
-    class TeamComparator implements Comparator<Team>{
 
-        @Override
-        public int compare(Team o1, Team o2) {
-            int points =(o2.getPoints())- o1.getPoints();
-            if(points != 0){
-                return points;
-            }
-            return (o2.getGoalDifference()) - o1.getGoalDifference();
-        }
-    }
 }
